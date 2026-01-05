@@ -45,3 +45,23 @@ module rounded_wall(
 		_rounder(roundness[0], depth);
 	}
 }
+
+module limited_rounded_wall(
+	length,
+	height,
+	depth,
+	max_length
+)
+{
+	let(roundness=min(
+		height / 2,
+		length,
+		max_length - length
+	))
+	rounded_wall(
+		length,
+		height,
+		depth,
+		[roundness, roundness]
+	);
+}
