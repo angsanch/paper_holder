@@ -11,7 +11,7 @@ wall_sizes = [25, 50];
 low_wall_height = 10;
 
 use <./rotator.scad>;
-use <./rounded_wall.scad>;
+use <./rounded.scad>;
 
 module holder(
     paper_width = 100,
@@ -65,7 +65,7 @@ module holder(
             0,
 		])
 		translate([0, 0, wall_width])
-		#cube([wall_width, wall_width, stack_height]);
+		cube([wall_width, wall_width, stack_height]);
 
 		// notes
         translate([
@@ -86,7 +86,7 @@ module holder(
 				wall_width
 			])
 			rotate([0, 0, 180])
-			#union() {
+			union() {
 				limited_rounded_wall(
 					paper_width - low_wall_height / 2,
 					low_wall_height,
@@ -106,5 +106,15 @@ module holder(
     }
 }
 
-$fn = $preview ? 16 : 64;
-holder(paper_width, paper_height, stack_height, notes_width, wall_width, wall_sizes, low_wall_height);
+$fn = $preview ? 16 : 128;
+difference() {
+	holder(paper_width, paper_height, stack_height, notes_width, wall_width, wall_sizes, low_wall_height);
+
+	if (!$preview)
+	round_outer_corners(
+		paper_width + 2 * wall_width,
+		paper_height + 3 * wall_width + notes_width,
+		stack_height + wall_width,
+		wall_width
+	);
+}

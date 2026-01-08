@@ -67,3 +67,27 @@ module limited_rounded_wall(
 		[roundness, roundness]
 	);
 }
+
+module round_outer_corners(
+	base_width,
+	base_height,
+	height,
+	roundness
+){
+	for (x = [0:1], y = [0,1])
+	{
+		let(
+			rot =	(x == 0 && y == 0) ? 0 :
+					(x == 1 && y == 0) ? 90 :
+					(x == 1 && y == 1) ? 180 :
+										 270
+		){
+			translate([
+				x * base_width,
+				y * base_height,
+			0])
+			rotate([90, 0, 90 + rot])
+			_rounder(roundness, height);
+		}
+	}
+}
