@@ -8,7 +8,7 @@ module _rounder(
 			depth,
 			side
 		]);
-	
+
 		translate([side, -depth / 2, side])
 		rotate([-90, 0, 0])
 		cylinder(h=depth * 2, r=side);
@@ -53,6 +53,8 @@ module limited_rounded_wall(
 	max_length
 )
 {
+	assert(length <= max_length, "Length exceeds max length")
+
 	let(roundness=min(
 		height / 2,
 		length,

@@ -8,6 +8,7 @@ stack_height = 50;
 notes_width = 5;
 wall_width = 2;
 wall_sizes = [25, 50];
+low_wall_height = 10;
 
 use <./rotator.scad>;
 use <./rounded_wall.scad>;
@@ -18,12 +19,13 @@ module holder(
     stack_height = 50,
 	notes_width = 5,
     wall_width = 2,
-	wall_sizes = [25, 50]
+	wall_sizes = [25, 50],
+	low_wall_height = 10
 ){
 	assert(len(wall_sizes) == 2, "Exactly 2 sizes are expected");
 	assert(wall_sizes[0] >= 0 && wall_sizes[0] <= 100, "");
 	assert(wall_sizes[1] >= 0 && wall_sizes[1] <= 100, "");
-	
+
     union() {
         //base
 		cube([
@@ -33,11 +35,6 @@ module holder(
         ]);
 
         //long walls
-        rotator(2, [
-            paper_width / 2 + wall_width,
-            paper_height / 2 + wall_width,
-            0,
-		])
 		translate([wall_width, 0, wall_width])
 		limited_rounded_wall(
 			paper_width * wall_sizes[0] / 100,
@@ -68,8 +65,8 @@ module holder(
             0,
 		])
 		translate([0, 0, wall_width])
-		cube([wall_width, wall_width, stack_height]);
-		
+		#cube([wall_width, wall_width, stack_height]);
+
 		// notes
         translate([
             paper_width + wall_width,
@@ -81,21 +78,33 @@ module holder(
 			wall_width + notes_width,
 			wall_width + stack_height,
 		]);
-		
-        translate([
-            paper_width + wall_width,
-            paper_height + notes_width + 3 * wall_width,
-            wall_width
-        ])
-		rotate([0, 0, 180])
-        limited_rounded_wall(
-			paper_width * wall_sizes[0] / 100,
-			stack_height,
-			wall_width,
-			paper_width
-		);
+
+		for (i = [0:1]) {
+			translate([
+				paper_width + wall_width,
+				paper_height + (2 + i) * wall_width + i * notes_width,
+				wall_width
+			])
+			rotate([0, 0, 180])
+			#union() {
+				limited_rounded_wall(
+					paper_width - low_wall_height / 2,
+					low_wall_height,
+					wall_width,
+					paper_width
+				);
+
+				translate([0, 0, low_wall_height])
+				limited_rounded_wall(
+					paper_width * wall_sizes[0] / 100,
+					stack_height - low_wall_height,
+					wall_width,
+					paper_width - low_wall_height
+				);
+			}
+		}
     }
 }
 
 $fn = $preview ? 16 : 64;
-holder(paper_width, paper_height, stack_height, notes_width, wall_width, wall_sizes);
+holder(paper_width, paper_height, stack_height, notes_width, wall_width, wall_sizes, low_wall_height);
